@@ -1,0 +1,380 @@
+<% layout("layouts/boilerplate") %>
+  <div class="row mt-4 mb-4">
+    <!-- LEFT SIDE -->
+    <div class="col-md-6 offset-md-1 ">
+      <div class="">
+        <h3 class="mb-4">
+          Book Your Stay
+        </h3>
+        <h5 class="mt-3">
+          <%= listing.title %>
+        </h5>
+        <p class="text-muted">
+          ₹<%= listing.price.toLocaleString("en-IN") %> / night
+        </p>
+        <form id="booking-form" novalidate class="needs-validation">
+          <!-- CHECK IN -->
+          <div class="mb-3">
+            <label class="form-label">
+              Check In
+            </label>
+            <input type="text" name="checkIn" id="checkIn" class="form-control" placeholder="DD/MM/YYYY" required
+              readonly />
+            <div class="invalid-feedback">
+              Please select check in date
+            </div>
+          </div>
+          <!-- CHECK OUT -->
+          <div class="mb-3">
+            <label class="form-label">
+              Check Out
+            </label>
+            <input type="text" name="checkOut" id="checkOut" class="form-control" placeholder="DD/MM/YYYY" required
+              readonly />
+            <div class="invalid-feedback">
+              Please select check out date
+            </div>
+          </div>
+          <!-- GUESTS -->
+          <div class="mb-3">
+            <label class="form-label">
+              Guests
+            </label>
+            <input type="number" name="guests" id="guests" min="1" class="form-control" placeholder="Number of guests"
+              required />
+            <div class="invalid-feedback">
+              Please enter guest count
+            </div>
+          </div>
+          <!-- ERROR -->
+          <div id="booking-error" class="text-danger mb-3">
+          </div>
+          <!-- TOTAL -->
+          <!-- <h5 class="mb-4">
+            Total Price :
+            ₹<span id="totalPrice">0</span>
+          </h5> -->
+          <!-- BUTTON -->
+          <button type="button" id="pay-button" class="btn btn-dark mt-4">
+            Pay &nbsp; &nbsp;₹<span id="totalPrice">0</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- RIGHT SIDE -->
+    <div class="col-md-4">
+      <!-- RESERVED DATES -->
+      <% if(booking.length> 0) { %>
+        <div class="mb-4">
+          <h5 class="text-danger mb-3 mt-2">
+            Reserved Dates
+          </h5>
+          <% booking.forEach((item)=> { %>
+            <div class="border rounded p-3 mb-3">
+              <p class="text-danger mb-2">
+                <strong>Check In:</strong>
+                <%= item.checkIn.toLocaleDateString( "en-IN" , { day: "numeric" , month: "long" , year: "numeric" } ) %>
+              </p>
+              <p class="text-danger mb-0">
+                <strong>Check Out:</strong>
+                <%= item.checkOut.toLocaleDateString( "en-IN" , { day: "numeric" , month: "long" , year: "numeric" } )
+                  %>
+              </p>
+            </div>
+            <% }) %>
+        </div>
+        <% } %>
+          <!-- CALENDAR -->
+          <h5 class="mb-3">
+            Calendar
+          </h5>
+          <div id="bookingCalendar"></div>
+    </div>
+  </div>
+  <!-- SCRIPT -->
+  <script>
+    // RESERVED DATES
+    const reservedDates = [
+        <% booking.forEach((item, index) => { %>
+    {
+      checkIn: new Date("<%= item.checkIn.toISOString() %>"),
+      checkOut: new Date("<%= item.checkOut.toISOString() %>")
+    }
+      <%= index < booking.length - 1 ? "," : "" %>
+        <% }) %>
+    ];
+    // ELEMENTS
+    const checkIn =
+      document.getElementById("checkIn");
+    const checkOut =
+      document.getElementById("checkOut");
+    const guests =
+      document.getElementById("guests");
+    const totalPrice =
+      document.getElementById("totalPrice");
+    const payButton =
+      document.getElementById("pay-button");
+    const bookingError =
+      document.getElementById("booking-error");
+    const pricePerNight =
+      Number("<%= listing.price %>");
+    // MAIN CALENDAR
+    flatpickr("#bookingCalendar", {
+      inline: true,
+      mode: "range",
+      minDate: "today",
+      disable: reservedDates.map(date => ({
+        from: date.checkIn,
+        to: date.checkOut
+      })),
+      // SELECT DATES
+      onChange: function (selectedDates) {
+        if (selectedDates.length === 2) {
+          checkIn.value =
+            flatpickr.formatDate(
+              selectedDates[0],
+              "d/m/Y"
+            );
+          checkOut.value =
+            flatpickr.formatDate(
+              selectedDates[1],
+              "d/m/Y"
+            );
+          calculatePrice();
+        }
+      },
+      // RESERVED DATES STYLE
+      onDayCreate: function (
+        dObj,
+        dStr,
+        fp,
+        dayElem
+      ) {
+        const currentDate =
+          new Date(dayElem.dateObj);
+        currentDate.setHours(0, 0, 0, 0);
+        reservedDates.forEach(date => {
+          const checkInDate =
+            new Date(date.checkIn);
+          const checkOutDate =
+            new Date(date.checkOut);
+          checkInDate.setHours(0, 0, 0, 0);
+          checkOutDate.setHours(0, 0, 0, 0);
+          // CHECK IN
+          if (
+            currentDate.getTime() ===
+            checkInDate.getTime()
+          ) {
+            dayElem.style.background =
+              "#ff385c";
+            dayElem.style.color =
+              "white";
+            dayElem.style.borderRadius =
+              "50%";
+          }
+          // CHECK OUT
+          if (
+            currentDate.getTime() ===
+            checkOutDate.getTime()
+          ) {
+            dayElem.style.background =
+              "#ff385c";
+            dayElem.style.color =
+              "white";
+            dayElem.style.borderRadius =
+              "50%";
+          }
+        });
+      }
+    });
+    // CHECK IN INPUT
+    flatpickr("#checkIn", {
+      dateFormat: "d/m/Y",
+      minDate: "today",
+      disable: reservedDates.map(date => ({
+        from: date.checkIn,
+        to: date.checkOut
+      })),
+      onChange: function (selectedDates) {
+        if (selectedDates.length > 0) {
+          checkOut._flatpickr.set(
+            "minDate",
+            selectedDates[0]
+          );
+          calculatePrice();
+        }
+      }
+    });
+    // CHECK OUT INPUT
+    flatpickr("#checkOut", {
+      dateFormat: "d/m/Y",
+      minDate: "today",
+      disable: reservedDates.map(date => ({
+        from: date.checkIn,
+        to: date.checkOut
+      })),
+      onChange: function () {
+        calculatePrice();
+      }
+    });
+    // DATE CONVERT
+    function convertDate(dateString) {
+      const parts =
+        dateString.split("/");
+      return new Date(
+        parts[2],
+        parts[1] - 1,
+        parts[0]
+      );
+    }
+    // CALCULATE PRICE
+    function calculatePrice() {
+      if (
+        checkIn.value &&
+        checkOut.value
+      ) {
+        const inDate =
+          convertDate(checkIn.value);
+        const outDate =
+          convertDate(checkOut.value);
+        const days = Math.ceil(
+          (outDate - inDate) /
+          (1000 * 60 * 60 * 24)
+        );
+        if (days > 0) {
+          totalPrice.innerText =
+            days * pricePerNight;
+        }
+      }
+    }
+    // VALIDATION
+    function validateForm() {
+      let hasError = false;
+      bookingError.innerText = "";
+      if (!checkIn.value) {
+        checkIn.classList.add(
+          "is-invalid"
+        );
+        hasError = true;
+      } else {
+        checkIn.classList.remove(
+          "is-invalid"
+        );
+      }
+      if (!checkOut.value) {
+        checkOut.classList.add(
+          "is-invalid"
+        );
+        hasError = true;
+      } else {
+        checkOut.classList.remove(
+          "is-invalid"
+        );
+      }
+      if (!guests.value) {
+        guests.classList.add(
+          "is-invalid"
+        );
+        hasError = true;
+      } else {
+        guests.classList.remove(
+          "is-invalid"
+        );
+      }
+      return !hasError;
+    }
+    // PAY BUTTON
+    payButton.addEventListener(
+      "click",
+      async function () {
+        if (!validateForm()) return;
+        try {
+          const response =
+            await fetch(
+              `/bookings/<%= listing._id %>/create-order`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json",
+                },
+                body: JSON.stringify({
+                  checkIn:
+                    checkIn.value,
+                  checkOut:
+                    checkOut.value,
+                  guests:
+                    guests.value,
+                }),
+              }
+            );
+          const order =
+            await response.json();
+          if (order.error) {
+            bookingError.innerText =
+              order.error;
+            return;
+          }
+          const options = {
+            key:
+              "<%= razorpayKeyId %>",
+            amount:
+              order.amount,
+            currency:
+              "INR",
+            name:
+              "Wanderlust",
+            description:
+              "Booking Payment",
+            order_id:
+              order.id,
+            handler:
+              async function (response) {
+                await fetch(
+                  `/bookings/<%= listing._id %>`,
+                  {
+                    method:
+                      "POST",
+                    headers: {
+                      "Content-Type":
+                        "application/json",
+                    },
+                    body:
+                      JSON.stringify({
+                        checkIn:
+                          checkIn.value,
+                        checkOut:
+                          checkOut.value,
+                        guests:
+                          guests.value,
+                        paymentId:
+                          response.razorpay_payment_id,
+                      }),
+                  }
+                );
+                Swal.fire({
+                  icon:
+                    "success",
+                  title:
+                    "Booking Confirmed!",
+                  text:
+                    "Payment completed successfully.",
+                  confirmButtonColor:
+                    "#222222",
+                }).then(() => {
+                  window.location.href =
+                    `/listings/<%= listing._id %>`;
+                });
+              },
+          };
+          const rzp =
+            new Razorpay(options);
+          rzp.open();
+        } catch (err) {
+          console.log(err);
+          bookingError.innerText =
+            "Something went wrong";
+        }
+      }
+    );
+  </script>

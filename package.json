@@ -1,0 +1,38 @@
+{
+    "name": "majorproject",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "@mapbox/mapbox-sdk": "^0.16.2",
+        "cloudinary": "^1.41.3",
+        "connect-flash": "^0.1.1",
+        "connect-mongo": "^5.1.0",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^17.4.2",
+        "ejs": "^5.0.1",
+        "ejs-mate": "^4.0.0",
+        "express": "^5.2.1",
+        "express-session": "^1.19.0",
+        "flatpickr": "^4.6.13",
+        "helmet": "^8.1.0",
+        "joi": "^18.0.2",
+        "method-override": "^3.0.0",
+        "mongoose": "^9.3.3",
+        "multer": "^2.1.1",
+        "multer-storage-cloudinary": "^4.0.0",
+        "passport": "^0.7.0",
+        "passport-local": "^1.0.0",
+        "passport-local-mongoose": "^9.0.1",
+        "path": "^0.12.7",
+        "path-to-regexp": "^6.3.0",
+        "razorpay": "^2.9.6"
+    }
+}

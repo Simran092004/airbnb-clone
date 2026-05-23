@@ -1,0 +1,70 @@
+<style>
+  .search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0 auto;
+}
+
+.inp-search {
+  width: 22rem;
+  border-radius: 2rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+}
+
+.btn-search {
+  background-color: #fe424d;
+  color: white;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  border: none;
+}
+
+
+  .btn-search:hover {
+    background-color: #fe424d;
+    color: #fff;
+  }
+
+  .btn-search i {
+    display: inline;
+    margin-right: 0.5rem;
+  }
+
+</style>
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link " href="/listings">Explore</a>
+      </div>
+    </div>
+      <div class="navbar-nav ms-auto">
+        <form class="d-flex search-form" role="search" action="/listings/search" method="get">
+          <input class="form-control inp-search me-2" name="query" type="search" placeholder="Search destinations"
+            aria-label="Search" />
+          <button class="btn btn-search" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i><span class="search-text">Search</span>
+          </button>
+        </form>
+      </div>
+    <div class="collapse navbar-collapse colps" id="navbarNavAltMarkup">
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link " href="/listings/new">Airbnb your home</a>
+        <% if (typeof currentUser==="undefined" || !currentUser) { %>
+          <a class="nav-link" href="/users/signup"><b>SignUp</b></a>
+          <a class="nav-link" href="/users/login"><b>Login</b></a>
+          <%}%>
+            <% if (typeof currentUser !=="undefined" && currentUser) { %>
+              <a class="nav-link" href="/users/logout"><b>LogOut</b></a>
+              <%}%>
+      </div>
+    </div>
+  </div>
+</nav>
