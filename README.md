@@ -91,11 +91,22 @@ RAZORPAY_KEY_SECRET=your_razorpay_secret_key
 
 ## 📸 Screenshots
 
-### Home Page
-![Home Page](screenshots/home.png)
+## 📸 Screenshots
 
-### Listing Page
-![Listing Page](screenshots/listing.png)
+### Home Page
+![Home](Home.png)
+
+### Create Listing
+![Create](Create.png)
+
+### Edit Listing
+![Edit](Edit.png)
 
 ### Login Page
-![Login Page](screenshots/login.png)
+![Login](Login.png)
+
+### Reviews Section
+![Reviews](reviews.png)
+
+### Map
+![Map](map.png)
