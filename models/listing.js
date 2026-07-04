@@ -26,17 +26,6 @@ const listingSchema = new Schema({
   },
   category: {
     type: String,
-    enum: [
-      "home",
-      "iconic-cities",
-      "trending",
-      "mountains",
-      "castles",
-      "amazing-pools",
-      "camping",
-      "farms",
-      "arctic",
-    ],
     required: true,
   },
   bookings: [{ type: Schema.Types.ObjectId, ref: "Booking" }],
